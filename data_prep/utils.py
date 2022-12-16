@@ -66,13 +66,12 @@ def trim_img(img, plot=False):
     pic = pic[min(rem_y):max(rem_y),:]
     pic = pic[:,min(rem_x):max(rem_x)]
 
-    if plot:
-        plt.subplot(1,2,1)
-        plt.imshow(pic, cmap='gray')
-        plt.subplot(1,2,2)
-        plt.imshow(img, cmap='gray')
-        # x_train[n][:,1].sum()
-
+    # if plot:
+    #     plt.subplot(1,2,1)
+    #     plt.imshow(pic, cmap='gray')
+    #     plt.subplot(1,2,2)
+    #     plt.imshow(img, cmap='gray')
+    #     # x_train[n][:,1].sum()
     return pic
 
 def square_pick(img, plot=False):
@@ -93,13 +92,12 @@ def square_pick(img, plot=False):
 
     pic = cv2.resize(pic, dsize=(28,28), interpolation=cv2.INTER_AREA)
     
-    plt.subplot(1,2,1)
-    plt.imshow(pic, cmap='gray')
+    # plt.subplot(1,2,1)
+    # plt.imshow(pic, cmap='gray')
+    # # plt.xticks([]), plt.yticks([])
+    # plt.subplot(1,2,2)
+    # plt.imshow(img, cmap='gray')
     # plt.xticks([]), plt.yticks([])
-    plt.subplot(1,2,2)
-    plt.imshow(img, cmap='gray')
-    plt.xticks([]), plt.yticks([])
-
     return pic
 
 
