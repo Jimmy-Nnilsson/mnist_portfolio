@@ -9,7 +9,13 @@ from streamlit_drawable_canvas import st_canvas
 import keras
 import keras.backend as K
 
-model = keras.models.load_model('./model/cnn.h5')
+from pathlib import Path
+
+merge_map = {0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: 'G', 7: 'H', 8: 'I', 9: 'J',
+            10: 'K', 11: 'L', 12: 'M', 13: 'N', 14: 'O', 15: 'P', 16: 'Q', 17: 'R', 18: 'S',
+            19: 'T', 20: 'U', 21: 'V', 22: 'W', 23: 'X', 24: 'Y', 25: 'Z'}
+
+model = keras.models.load_model('../model/emnist_save.json')
 # model = keras.models.load_model('./model/cnn_largetrain.h5')
     
     
@@ -53,10 +59,11 @@ def main():
     #     for col in objects.select_dtypes(include=['object']).columns:
     #         objects[col] = objects[col].astype("str")
     #     st.dataframe(objects)
-
-    if canvas_result.image_data is not None:
-                st.markdown(f"## Predicted number: {np.argmax(model.predict(convert_picture(canvas_result.image_data)))}")
-                # st.write(np.argmax(model.predict(convert_picture(canvas_result.image_data))))
+    if st.button('predict'):
+        if canvas_result.image_data is not None:
+                    st.markdown(f"## Predicted number: {merge_map[np.argmax(model.predict(convert_picture(canvas_result.image_data)))]}")
+                    st.image(convert_picture(canvas_result.image_data).reshape(28,28))
+                    # st.write(np.argmax(model.predict(convert_picture(canvas_result.image_data))))
 
 if __name__ == '__main__':
     st.title('Handwritten number predictor')
