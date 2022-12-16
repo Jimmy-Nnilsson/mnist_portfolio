@@ -1,4 +1,4 @@
-python==3.10.8
+#python==3.10.8
 ipykernel 
 keras==2.11.0
 matplotlib==3.6.2
