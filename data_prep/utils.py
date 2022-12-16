@@ -74,18 +74,18 @@ def trim_img(img, plot=False):
     #     # x_train[n][:,1].sum()
     return pic
 
-def square_pick(img, plot=False):
+def square_pick(img, add=0, plot=False):
     pic = img.copy()
     x,y = pic.shape
 
-    x_diff = int((x-y)/2)
+    x_diff = int((x-y)/2)+add
     if x_diff > 0:
-        x_diff = int((x-y)/2)
+        # x_diff = int((x-y)/2)
         filler = np.zeros((x, x_diff))
         pic = np.hstack([filler, pic, filler])
 
     x,y = pic.shape
-    y_diff = int((y-x)/2)
+    y_diff = int((y-x)/2)+add
     if y_diff > 0:
         filler = np.zeros((y_diff, y))
         pic = np.vstack([filler, pic, filler])
@@ -101,7 +101,7 @@ def square_pick(img, plot=False):
     return pic
 
 
-def fix_image(image, plot=False):
+def fix_image(image, add=0, plot=False):
     pic = trim_img(image)
-    pic = square_pick(pic, plot)
+    pic = square_pick(pic, add, plot)
     return pic
