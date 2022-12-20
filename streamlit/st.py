@@ -51,6 +51,8 @@ def main():
                     st.markdown(f"## Predicted number: {merge_map[np.argmax(model.model.predict(get_pic(canvas_result.image_data, 2)))]}")
         if bg_image: 
             st.sidebar.markdown(f"## Predicted number: {merge_map[np.argmax(model.model.predict(get_pic(np.asarray(Image.open(BytesIO(bg_image.getbuffer()))), 2)))]}")
+        # To combine upload with canvas file
+        if False: st.image(get_pic(np.asarray(Image.open(BytesIO(bg_image.getbuffer()))), 2) + get_pic(canvas_result.image_data, 2), clamp=True)
                     
 
 if __name__ == '__main__':
