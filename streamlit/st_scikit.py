@@ -70,12 +70,17 @@ def main():
                     print(np.sum(camera_pic))
                     im = np.asarray(Image.open(BytesIO(camera_pic.getbuffer())))
                     print(im.shape)
-                    pred_img = prepping(im)
+                    pred_img = prepping(im, np.median(im))
                     print(pred_img.shape, np.sum(pred_img))
                     pred_img = pred_img.reshape(-1, 784)
 
                     st.markdown(f"## Randomforest Predicted Letter: { merge_map[model.predict(pred_img)[0]] }")
                     st.markdown(f"### CNN Predicted Letter: {get_nn_result(nn_model, camera_pic, merge_map, get_pic)}")
+                    
+                    st.image(cv2.cvtColor(im, cv2.COLOR_BGR2GRAY), clamp=True)
+                    # st.image(get_pic(im, 2,np.median(im)*1.33))
+                    # st.image(pred_img.reshape(28,28)*255)
+                    # st.write(np.unique(im, return_counts=True))
 
 
 if __name__ == '__main__':
