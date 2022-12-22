@@ -5,7 +5,10 @@ from io import BytesIO
 
 def prepping(im):
     emnist_size = 28
-    grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    if len(im.shape) == 3:
+        grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    else:
+        grey = im
     img = cv2.resize(grey, (emnist_size, emnist_size))
     arr = img
     
@@ -75,7 +78,8 @@ def fix_image(image, add=2, plot=False):
 
 def get_pic(img, add=0):
     pic = img
-    pic = cv2.cvtColor(pic, cv2.COLOR_BGR2GRAY)
+    if len(pic.shape) == 3:
+        pic = cv2.cvtColor(pic, cv2.COLOR_BGR2GRAY)
     pic = cv2.resize(pic, (28, 28))
     
     pic = 255 - pic
