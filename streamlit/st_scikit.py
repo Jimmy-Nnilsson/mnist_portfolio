@@ -22,42 +22,61 @@ model = joblib.load("./models/random_forest.joblib")
 nn_model = keras.models.load_model('./models/2emnist_save.h5')
       
 def main():
-    if st.button('predict'):
-        st.session_state['draw_update'] = True
-    drawing_mode = 'freedraw'
+    tab1, tab2 = st.tabs(['Canvas', 'Camera'])
+    with tab1:
+        st.write(' test test')
+        
+        if st.button('predict'):
+            st.session_state['draw_update'] = True
+            st.balloons()
+        drawing_mode = 'freedraw'
 
-    if 'draw_update' not in st.session_state:
-        st.session_state['draw_update'] = False
+        
 
-    # Create a canvas component
-    canvas_result = st_canvas(
-        fill_color="rgba(255, 165, 0, 0.3)",  # Fixed fill color with some opacity
-        stroke_width=10,
-        stroke_color='white',
-        background_color='black',
-        update_streamlit = st.session_state['draw_update'],
-        height=150,
-        width=150,
-        drawing_mode=drawing_mode,
-        key="canvas",
-    )
-
-    if st.session_state['draw_update'] == True: 
-        print("inside")
-        if np.sum(canvas_result.image_data) > 5737500:
-            print(np.sum(canvas_result.image_data))
-            im = canvas_result.image_data
-            print(im.shape)
-            pred_img = prepping(im)
-            print(pred_img.shape, np.sum(pred_img))
-            pred_img = pred_img.reshape(-1, 784)
-            st.markdown(f"## Randomforest Predicted Letter: { merge_map[model.predict(pred_img)[0]] }")
-
-            st.markdown(f"### CNN Predicted Letter: {get_nn_result(nn_model, ~canvas_result.image_data, merge_map, get_pic)}")
-
-
-
+        if 'draw_update' not in st.session_state:
             st.session_state['draw_update'] = False
+
+        # Create a canvas component
+        canvas_result = st_canvas(
+            fill_color="rgba(255, 165, 0, 0.3)",  # Fixed fill color with some opacity
+            stroke_width=10,
+            stroke_color='white',
+            background_color='black',
+            update_streamlit = st.session_state['draw_update'],
+            height=150,
+            width=150,
+            drawing_mode=drawing_mode,
+            key="canvas",
+        )
+
+        if st.session_state['draw_update'] == True: 
+            print("inside")
+            if np.sum(canvas_result.image_data) > 5737500:
+                print(np.sum(canvas_result.image_data))
+                im = canvas_result.image_data
+                print(im.shape)
+                pred_img = prepping(im)
+                print(pred_img.shape, np.sum(pred_img))
+                pred_img = pred_img.reshape(-1, 784)
+                st.markdown(f"## Randomforest Predicted Letter: { merge_map[model.predict(pred_img)[0]] }")
+
+                st.markdown(f"### CNN Predicted Letter: {get_nn_result(nn_model, ~canvas_result.image_data, merge_map, get_pic)}")
+
+
+                st.session_state['draw_update'] = False
+    with tab2:
+        camera_pic = st.camera_input("Take a picture")
+        if camera_pic is not None:
+                    print(np.sum(camera_pic))
+                    im = np.asarray(Image.open(BytesIO(camera_pic.getbuffer())))
+                    print(im.shape)
+                    pred_img = prepping(im)
+                    print(pred_img.shape, np.sum(pred_img))
+                    pred_img = pred_img.reshape(-1, 784)
+
+                    st.markdown(f"## Randomforest Predicted Letter: { merge_map[model.predict(pred_img)[0]] }")
+                    st.markdown(f"### CNN Predicted Letter: {get_nn_result(nn_model, camera_pic, merge_map, get_pic)}")
+
 
 if __name__ == '__main__':
     st.title('Handwritten letter predictor')
