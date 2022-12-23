@@ -3,7 +3,9 @@ import joblib
 import keras
 import numpy as np
 import streamlit as st
+from os import getcwd
 
+from pathlib import Path
 from PIL import Image
 from utils_scikit import *
 from streamlit_drawable_canvas import st_canvas
@@ -12,8 +14,14 @@ merge_map = {0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: 'G', 7: 'H', 8: 
             10: 'K', 11: 'L', 12: 'M', 13: 'N', 14: 'O', 15: 'P', 16: 'Q', 17: 'R', 18: 'S',
             19: 'T', 20: 'U', 21: 'V', 22: 'W', 23: 'X', 24: 'Y', 25: 'Z'}
 
-model = joblib.load("./mnist_portfolio/random_forest.joblib")   
-nn_model = keras.models.load_model('./mnist_portfolio/2emnist_save.h5')
+
+
+model_path = Path('random_forest.joblib')
+nn_model_path = Path('2emnist_save.h5')
+
+
+model = joblib.load(model_path)   
+nn_model = keras.models.load_model(nn_model_path)
 
 if 'draw_update' not in st.session_state:
     st.session_state['draw_update'] = False
