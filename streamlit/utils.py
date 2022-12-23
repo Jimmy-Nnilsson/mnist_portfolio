@@ -7,7 +7,15 @@ import cv2
 
 from pathlib import Path
 
-def get_root_path(folder_name):
+def get_root_path(folder_name:str):
+    """uses foldername to locate the project root path
+
+    Args:
+        folder_name (str): foldername to find in the path
+
+    Returns:
+        _type_: _description_
+    """    
     
     root_path = Path(os.getcwd())    
     for i in range(len(Path(os.getcwd()).parts)-1):
