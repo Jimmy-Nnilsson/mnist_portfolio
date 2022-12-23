@@ -8,17 +8,14 @@ import cv2
 from pathlib import Path
 
 def get_root_path(folder_name):
-    
     root_path = Path(os.getcwd())    
     for i in range(len(Path(os.getcwd()).parts)-1):
-        
         if root_path.parents[i].name == folder_name:
             return root_path.parents[i], root_path.parents[i] / 'data'
             
 def transp(image):
     image = image.reshape([28, 28])
     image = np.transpose(image)
-    # image = np.rot90(image)
     return image
 
 def gen_sets(p, lower=0, upper=0, numlist=None):
@@ -42,7 +39,6 @@ def unique_bar(dataset, key):
     sns.barplot(x=[key[xi] for xi in x], y=y)
     
 def convert_picture(im):
-
     grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     
     inverted = 255 - grey
@@ -50,8 +46,7 @@ def convert_picture(im):
     img = np.reshape(img, (1, 28, 28))
     return img
 
-def trim_img(img, plot=False):
-    # print(img)
+def trim_img(img):
     x,y = img.shape
     pic = img
     rem_x, rem_y = [],[]
@@ -65,16 +60,9 @@ def trim_img(img, plot=False):
 
     pic = pic[min(rem_y):max(rem_y),:]
     pic = pic[:,min(rem_x):max(rem_x)]
-
-    # if plot:
-    #     plt.subplot(1,2,1)
-    #     plt.imshow(pic, cmap='gray')
-    #     plt.subplot(1,2,2)
-    #     plt.imshow(img, cmap='gray')
-    #     # x_train[n][:,1].sum()
     return pic
 
-def square_pick(img, add=0, plot=False):
+def square_pick(img, add=0):
     pic = img.copy()
     x,y = pic.shape
 
@@ -92,16 +80,11 @@ def square_pick(img, add=0, plot=False):
 
     pic = cv2.resize(pic, dsize=(28,28), interpolation=cv2.INTER_AREA)
     
-    # plt.subplot(1,2,1)
-    # plt.imshow(pic, cmap='gray')
-    # # plt.xticks([]), plt.yticks([])
-    # plt.subplot(1,2,2)
-    # plt.imshow(img, cmap='gray')
-    # plt.xticks([]), plt.yticks([])
+
     return pic
 
 
-def fix_image(image, add=0, plot=False):
+def fix_image(image, add=0):
     pic = trim_img(image)
-    pic = square_pick(pic, add, plot)
+    pic = square_pick(pic, add)
     return pic
