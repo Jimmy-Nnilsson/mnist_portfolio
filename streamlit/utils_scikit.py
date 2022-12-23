@@ -100,12 +100,30 @@ def square_pick(img:np.array, add:int=0) -> np.array:
     return pic
 
 def fix_image(image:np.array, add:int=2) -> np.array:
-    
+    """Trims image from empty borders, makes it square and resizes to 28, 28
+
+    Args:
+        image (np.array): greyscale image
+        add (int, optional): sets extra empty borders around. Defaults to 2.
+
+    Returns:
+        np.array: squared and cropped picture
+    """    
     pic = trim_img(image)
     pic = square_pick(pic, add)
     return pic
 
 def get_pic(img: np.array, add:int=0) -> np.array:
+    """ Makes the picture greyscale scales the image and inverts the greyscale.
+    squares and cropps picture. Then makes it the correct dimensions for neural model.
+
+    Args:
+        img (np.array): image
+        add (int, optional): sets border around cropped image. Defaults to 0.
+
+    Returns:
+        np.array: cropped image in the correct format.
+    """    
     pic = img
     if len(pic.shape) == 3:
         pic = cv2.cvtColor(pic, cv2.COLOR_BGR2GRAY)
@@ -120,7 +138,19 @@ def get_pic(img: np.array, add:int=0) -> np.array:
     pic = np.expand_dims(pic, -1)
     return pic
 
-def get_nn_result(model:keras.Model, image:np.array, mm:dict, get_pic:function)->np.array:
+def get_nn_result(model:keras.Model, image:np.array, mm:dict, get_pic:get_pic)->np.array:
+    """Gets image from different sources gets the neural net model to run its prediction.
+    Then it outputs the result.
+
+    Args:
+        model (keras.Model): A keras model
+        image (np.array): picture to predict
+        mm (dict): result dictionary
+        get_pic (function): function to preprocess the image
+
+    Returns:
+        np.array: _description_
+    """    
     print(type(image))
     if type(image) != np.ndarray:
         img = get_pic(np.asarray(Image.open(BytesIO(image.getbuffer()))), 2)
@@ -128,7 +158,17 @@ def get_nn_result(model:keras.Model, image:np.array, mm:dict, get_pic:function)-
         img = get_pic(image, 2)
     return mm[np.argmax(model.predict(img))]
     
-def preprocess_camera_picture(img, non_zero=1, threshold=0.5):
+def preprocess_camera_picture(img:np.array, non_zero:int=1, threshold:float=0.5) -> np.array:
+    """preprocess picture from camera. To reduce grain and make it a similar type as from the canvas or nist datasets.
+
+    Args:
+        img (np.array): color picture from camera.
+        non_zero (int, optional): how many non zeros searched for to count as part of the image. Defaults to 1.
+        threshold (float, optional): sets the factor to threshold the median value with to split between bright and dark pixels. Defaults to 0.5.
+
+    Returns:
+        np.array: mnistlike picture.
+    """    
     im = cv2.bilateralFilter(img,30,75,75)
     im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 

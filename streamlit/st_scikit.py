@@ -71,6 +71,8 @@ def main():
                 st.markdown(f"## Randomforest Predicted Letter: { merge_map[model.predict(pred_img)[0]] }")
                 st.markdown(f"### CNN Predicted Letter: {get_nn_result(nn_model, ~im, merge_map, get_pic)}")
 
+        print(type(get_pic))
+
         with col2:
             if camera_pic is not None:
                 st.image(~im)
