@@ -1,16 +1,46 @@
-import cv2
+import os
 import numpy as np
-import tensorflow as tf
-import pandas as pd
+
+import seaborn as sns
 import matplotlib.pyplot as plt
+import cv2
 
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.pipeline import Pipeline
+from pathlib import Path
 
-from PIL import Image
-from io import BytesIO
+def get_root_path(folder_name):
+    
+    root_path = Path(os.getcwd())    
+    for i in range(len(Path(os.getcwd()).parts)-1):
+        
+        if root_path.parents[i].name == folder_name:
+            return root_path.parents[i], root_path.parents[i] / 'data'
+            
+def transp(image):
+    image = image.reshape([28, 28])
+    image = np.transpose(image)
+    # image = np.rot90(image)
+    return image
 
+def gen_sets(p, lower=0, upper=0, numlist=None):
+    
+    x = np.genfromtxt(p, delimiter=',')
+    if not (lower == 0 and upper == 0 and numlist==None):
+        if numlist == None:
+            x = x[(x[:,0] >= lower) & (x[:,0] <= upper)]
+        else:
+            x = x[np.in1d(x[:,0] , numlist)]
+    y = x[:,[0]].astype('int')
 
+    y = y.reshape(x.shape[0])
+    x = x[:,1:]
+    
+    x = np.apply_along_axis(transp, 1, x)
+    return x, y
+
+def unique_bar(dataset, key):
+    x, y = np.unique(dataset, return_counts=True)
+    sns.barplot(x=[key[xi] for xi in x], y=y)
+    
 def convert_picture(im):
 
     grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
@@ -20,7 +50,8 @@ def convert_picture(im):
     img = np.reshape(img, (1, 28, 28))
     return img
 
-def trim_img(img):
+def trim_img(img, plot=False):
+    # print(img)
     x,y = img.shape
     pic = img
     rem_x, rem_y = [],[]
@@ -34,6 +65,13 @@ def trim_img(img):
 
     pic = pic[min(rem_y):max(rem_y),:]
     pic = pic[:,min(rem_x):max(rem_x)]
+
+    # if plot:
+    #     plt.subplot(1,2,1)
+    #     plt.imshow(pic, cmap='gray')
+    #     plt.subplot(1,2,2)
+    #     plt.imshow(img, cmap='gray')
+    #     # x_train[n][:,1].sum()
     return pic
 
 def square_pick(img, add=0, plot=False):
@@ -42,6 +80,7 @@ def square_pick(img, add=0, plot=False):
 
     x_diff = int((x-y)/2)+add
     if x_diff > 0:
+        # x_diff = int((x-y)/2)
         filler = np.zeros((x, x_diff))
         pic = np.hstack([filler, pic, filler])
 
@@ -52,80 +91,17 @@ def square_pick(img, add=0, plot=False):
         pic = np.vstack([filler, pic, filler])
 
     pic = cv2.resize(pic, dsize=(28,28), interpolation=cv2.INTER_AREA)
+    
+    # plt.subplot(1,2,1)
+    # plt.imshow(pic, cmap='gray')
+    # # plt.xticks([]), plt.yticks([])
+    # plt.subplot(1,2,2)
+    # plt.imshow(img, cmap='gray')
+    # plt.xticks([]), plt.yticks([])
     return pic
 
-def fix_image(image, add=2, plot=False):
+
+def fix_image(image, add=0, plot=False):
     pic = trim_img(image)
     pic = square_pick(pic, add, plot)
     return pic
-
-def get_pic(img, add=0):
-    pic = img
-    pic = cv2.cvtColor(pic, cv2.COLOR_BGR2GRAY)
-    pic = cv2.resize(pic, (28, 28))
-    
-    pic = 255 - pic
-    pic[pic < 150] = 0
-
-    pic = fix_image(pic, add)
-    pic = np.reshape(pic, (1, 28, 28))
-    pic = pic.astype("float32") / 255
-    pic = np.expand_dims(pic, -1)
-    return pic
-
-def get_nn_result(model, image, mm, get_pic):
-    print(type(image))
-    if type(image) != np.ndarray:
-        img = get_pic(np.asarray(Image.open(BytesIO(image.getbuffer()))), 2)
-    else:
-        img = get_pic(image, 2)
-    return mm[np.argmax(model.predict(img))]
-
-class EMNISTDataPreparation(BaseEstimator, TransformerMixin):
-    def __init__(self) -> None:
-        all_columns = []
-        self.image_size = 28
-    def fit(self, X, y=None):
-        return self
-
-    def transform(self, X: pd.DataFrame):
-        if type(X) != np.ndarray:
-        
-            np_X = np.asarray(Image.open(BytesIO(X.getbuffer())))       
-            np_X = cv2.cvtColor(np_X, cv2.COLOR_BGR2GRAY) 
-        else:
-            np_X = cv2.cvtColor(X, cv2.COLOR_BGR2GRAY) 
-
-        ret_lst = []
-        
-        np_X = np.array(cv2.resize(np_X, (self.image_size, self.image_size)))
-        np_X = ~np_X
-        np_X = np.array(np_X).reshape(-1, self.image_size, self.image_size)
-        
-        for idx in range(np_X.shape[0]):
-            arr = np_X[idx, :, :]
-            # arr = np.transpose(arr)
-            arr[arr < 125] = 0
-            arr[arr != 0]  = 1
-
-            a = np.sum(arr, axis=0)
-            b = np.sum(arr, axis=1)
-            left = np.where(a != 0)[0][0]
-            right = np.where(np.flip(a) != 0)[0][0]
-            top = np.where(b != 0)[0][0]
-            bottom = np.where(np.flip(b) != 0)[0][0]
-            
-            arr = arr[top:self.image_size - bottom, left:self.image_size - right]
-            top_pad = int((self.image_size - arr.shape[0]) / 2)
-            bottom_pad = top_pad
-            if (top_pad * 2 + arr.shape[0]) < self.image_size: 
-                bottom_pad +=1 
-            left_pad = int((self.image_size - arr.shape[1]) / 2)
-            right_pad = left_pad
-            if (left_pad * 2 + arr.shape[1]) < self.image_size: 
-                right_pad +=1 
-            
-            padded = np.pad(arr, pad_width=((top_pad, bottom_pad), (left_pad, right_pad)))
-            ret_lst.append(padded)
-        return_array = np.array(ret_lst).reshape(self.image_size,self.image_size,-1)# ** 2)
-        return return_array
