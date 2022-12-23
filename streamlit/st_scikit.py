@@ -44,14 +44,12 @@ def main():
         #Update results when button is pressed and something is drawn on the canvas
         if st.session_state['draw_update'] == True: 
             if np.sum(canvas_result.image_data) > 5737500:
-                print(np.sum(canvas_result.image_data))
                 im = canvas_result.image_data
                 pred_img = prepping(im)
                 pred_img = pred_img.reshape(-1, 784)
 
                 st.markdown(f"### Randomforest Predicted Letter: { merge_map[model.predict(pred_img)[0]] }")
                 st.markdown(f"### CNN Predicted Letter: {get_nn_result(nn_model, ~canvas_result.image_data, merge_map, get_pic)}")
-                # st.image(pred_img.reshape(28,28)*255, width=150)
 
                 st.session_state['draw_update'] = False
 
@@ -71,8 +69,6 @@ def main():
 
                 st.markdown(f"### Randomforest Predicted Letter: { merge_map[model.predict(pred_img)[0]] }")
                 st.markdown(f"### CNN Predicted Letter: {get_nn_result(nn_model, ~im, merge_map, get_pic)}")
-
-        print(type(get_pic))
 
         with col2:
             if camera_pic is not None:
