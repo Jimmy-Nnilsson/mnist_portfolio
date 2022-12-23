@@ -53,10 +53,10 @@ def main():
         if st.session_state['draw_update'] == True: 
             if np.sum(canvas_result.image_data) > 5737500:
                 im = canvas_result.image_data
-                pred_img = prepping(im)
-                pred_img = pred_img.reshape(-1, 784)
+                # pred_img = prepping(im)
+                # pred_img = pred_img.reshape(-1, 784)
 
-                st.markdown(f"### Randomforest Predicted Letter: { merge_map[model.predict(pred_img)[0]] }")
+                # st.markdown(f"### Randomforest Predicted Letter: { merge_map[model.predict(pred_img)[0]] }")
                 st.markdown(f"### CNN Predicted Letter: {get_nn_result(nn_model, ~canvas_result.image_data, merge_map, get_pic)}")
 
                 st.session_state['draw_update'] = False
@@ -72,10 +72,10 @@ def main():
                 img = np.asarray(Image.open(BytesIO(camera_pic.getbuffer())))
                 im = preprocess_camera_picture(img, threshold=threshold)
                 
-                pred_img = prepping(im)
-                pred_img = pred_img.reshape(-1, 784)
+                # pred_img = prepping(im)
+                # pred_img = pred_img.reshape(-1, 784)
 
-                st.markdown(f"### Randomforest Predicted Letter: { merge_map[model.predict(pred_img)[0]] }")
+                # st.markdown(f"### Randomforest Predicted Letter: { merge_map[model.predict(pred_img)[0]] }")
                 st.markdown(f"### CNN Predicted Letter: {get_nn_result(nn_model, ~im, merge_map, get_pic)}")
 
         with col2:
