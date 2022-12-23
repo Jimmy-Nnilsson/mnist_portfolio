@@ -53,7 +53,7 @@ def main():
         if st.session_state['draw_update'] == True: 
             if np.sum(canvas_result.image_data) > 5737500:
                 im = canvas_result.image_data
-                # pred_img = prepping(im)
+                pred_img = prepping(im)
                 # pred_img = pred_img.reshape(-1, 784)
 
                 # st.markdown(f"### Randomforest Predicted Letter: { merge_map[model.predict(pred_img)[0]] }")
