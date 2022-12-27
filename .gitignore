@@ -130,3 +130,7 @@ dmypy.json
 
 data/emnist*.csv
 data/*.csv
+
+streamlit/*.pdf
+streamlit/*.doc
+streamlit/*.docm
