@@ -87,7 +87,7 @@ def main():
         st.markdown(f'Uses the mouse to input capital letters. The arrows back and forth are undo and redo command. While the trashcan icon empties the canvas area.' )
         st.markdown(f'#### ○ Camera')
         st.markdown(f'Uses the camera to take a picture. Make sure that there is no other shapes within the picture.' )
-        st.markdown(f'In its current shape the printed letters needs to be written with a bold font in a white background' )
+        st.markdown(f'In its current shape the printed letters needs to be written with a bold dark font with a white background' )
         st.markdown(f'The picture also needs to be taken under well lit conditions. The threshold slider can compensate for some of the light conditions. Its output is shown beside the camera window.' )
 
 # Call main routine

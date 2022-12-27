@@ -7,14 +7,14 @@ import cv2
 
 from pathlib import Path
 
-def get_root_path(folder_name:str):
+def get_root_path(folder_name:str) -> Path:
     """uses foldername to locate the project root path
 
     Args:
         folder_name (str): foldername to find in the path
 
     Returns:
-        _type_: _description_
+        Path: _description_
     """    
     
     root_path = Path(os.getcwd())    
@@ -24,12 +24,31 @@ def get_root_path(folder_name:str):
             return root_path.parents[i], root_path.parents[i] / 'data'
             
 def transp(image):
+    """Reshapes and transposes image. Needed for emnist
+
+    Args:
+        image (_type_): image as numpy array.
+
+    Returns:
+        _type_: transposed an resized image
+    """    
     image = image.reshape([28, 28])
     image = np.transpose(image)
     # image = np.rot90(image)
     return image
 
-def gen_sets(p, lower=0, upper=0, numlist=None):
+def gen_sets(p:Path, lower:int=0, upper:int=0, numlist:list=None) -> np.array:
+    """Generates dataset filters on either range or list of labels
+
+    Args:
+        p (_type_): _description_
+        lower (int, optional): Lower label to use. Defaults to 0.
+        upper (int, optional): Upper label to use. Defaults to 0.
+        numlist (_type_, optional): List of labels to use. Defaults to None.
+
+    Returns:
+        _type_: features and labels in separate numpy arrays
+    """    
     
     x = np.genfromtxt(p, delimiter=',')
     if not (lower == 0 and upper == 0 and numlist==None):
@@ -45,11 +64,17 @@ def gen_sets(p, lower=0, upper=0, numlist=None):
     x = np.apply_along_axis(transp, 1, x)
     return x, y
 
-def unique_bar(dataset, key):
+def unique_bar(dataset:np.array, key:dict):
+    """Makes barplots of number or counts of unique.
+
+    Args:
+        dataset (_type_): Dataset of labels
+        key (_type_): Dict to decode numbers to lables
+    """    
     x, y = np.unique(dataset, return_counts=True)
     sns.barplot(x=[key[xi] for xi in x], y=y)
     
-def convert_picture(im):
+def convert_picture(im:np.array)-> np.array:
 
     grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     
@@ -58,8 +83,15 @@ def convert_picture(im):
     img = np.reshape(img, (1, 28, 28))
     return img
 
-def trim_img(img, plot=False):
-    # print(img)
+def trim_img(img) -> np.array:
+    """Trims black borders from image
+
+    Args:
+        img (_type_): Picture to be trimmed
+
+    Returns:
+        np.array: Trimmed image
+    """    
     x,y = img.shape
     pic = img
     rem_x, rem_y = [],[]
@@ -73,16 +105,18 @@ def trim_img(img, plot=False):
 
     pic = pic[min(rem_y):max(rem_y),:]
     pic = pic[:,min(rem_x):max(rem_x)]
-
-    # if plot:
-    #     plt.subplot(1,2,1)
-    #     plt.imshow(pic, cmap='gray')
-    #     plt.subplot(1,2,2)
-    #     plt.imshow(img, cmap='gray')
-    #     # x_train[n][:,1].sum()
     return pic
 
-def square_pick(img, add=0, plot=False):
+def square_pick(img:np.array, add:int=0) -> np.array:
+    """Tries to make the image square
+
+    Args:
+        img (np.array): Image as numpy array
+        add (int, optional): How much black border to add. Defaults to 0.
+
+    Returns:
+        np.array: Image with borders.
+    """    
     pic = img.copy()
     x,y = pic.shape
 
@@ -99,17 +133,19 @@ def square_pick(img, add=0, plot=False):
         pic = np.vstack([filler, pic, filler])
 
     pic = cv2.resize(pic, dsize=(28,28), interpolation=cv2.INTER_AREA)
-    
-    # plt.subplot(1,2,1)
-    # plt.imshow(pic, cmap='gray')
-    # # plt.xticks([]), plt.yticks([])
-    # plt.subplot(1,2,2)
-    # plt.imshow(img, cmap='gray')
-    # plt.xticks([]), plt.yticks([])
     return pic
 
 
-def fix_image(image, add=0, plot=False):
+def fix_image(image:np.array, add:int=0) -> np.array:
+    """Trims and squares image
+
+    Args:
+        image (np.array): Picture
+        add (int, optional): Sets how much dark border to be used. Defaults to 0.
+
+    Returns:
+        np.array: Trimmed and squared image
+    """    
     pic = trim_img(image)
-    pic = square_pick(pic, add, plot)
+    pic = square_pick(pic, add)
     return pic
